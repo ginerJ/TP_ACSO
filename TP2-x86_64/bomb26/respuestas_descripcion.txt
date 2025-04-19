@@ -1,0 +1,51 @@
+Juan Cruz Giner Pulero
+jginerpulero@udesa.edu.ar
+
+FASE 1:
+   - Se noto como el registro 'rsi' contiene un string en la direccion `0x4c9a58`.
+   - Se guarda en 'rdi' el input del usuario.
+   - Luego con `strings_not_equal` se compara la entrada del usuario con el string de 'rsi'.
+   - Si no son iguales explota la bomba.
+   - Entonces para desactivar la bomba basta con saber los contenidos de `0x4c9a58`.
+   - Con (gdb) x/s 0x4c9a58 se obtiene el input correcto:
+     "Al que es amigo, jamas lo dejen en la estacada Siempre el amigo mas fiel es una conduta honrada"
+
+FASE 2:
+
+    -El input llega como string a 'rdi'
+    -Se divide el input en dos enteros en 'rbx' y 'eax'
+    -Se le pasan a una funcion, misterio(num1 + num2 - 32, num1, num2)
+    -Esta funcion cuenta los bits de num1 + num2 - 32 y verifica que tenga 11 bits en 1
+    -Adicionalmente la funcion se fija que num1 XOR num2 sea negativo
+    -Se propuso un codigo de python para encontrar pares de enteros que cumpliesen estas condiciones, decidiendose por: -7921 10000
+
+FASE 3:
+
+    - El input esperado dos strings separados por un espacio, de no complirse el formato la bomba explota.
+    - La funcion sscanf lee la string y convierte el segundo string numerico a entero.
+    - El string se ubica en el archivo palabras.txt con búsqueda binaria, la cual guarda la cantidad de llamadas recursivas.
+    - La bomba no explota si el numero ingresado por el usuario corresponde a la cantidad de llamadas recursivas que se necesitaron
+      para localizar la palabra dentro del archivo y no puede ser mayor a 11.
+    - Nuevamente utilizando un codigo de python se itero por las palabras del txt y los valores posibles posibles, para obtener los inputs validos.
+    - Es de notar que el corte medio de la busqueda binaria estaba modificado en relacion al utilizado convencionalmente (low XOR high) / 2 + (low AND high)
+    - Una combinacion valida al azar fue seleccionada: abarbetar 11.
+
+FASE 4:
+
+    - Con sscanf lee dos enteros separados con un espacio como input.
+    - Al primer numero se les aplicada una mascara donde se conservan los 4 bits menos significativos.
+    - Si el resultado es 15, hay explosion de la bomba.
+    - Luego se encontro que se realizaba un recorrido sobre un array el cual se calculaba al momento de ejecucion.
+    - El numero calculado con la mascara anterior es el primer indice del array que se visita, se guarda el valor encontrado a una suma de valores y se
+       visita el siguiente elemento indexado con el valor encontrado en la anterior iteracion, se suma el valor encontrado nuevamente, este proceso se repite
+       hasta cuando se encuentra el valor 15.
+    - Para evita la explosion de deben exactamente 5 pasos de la iteracion del array y el valor final de la suma debe ser igual al segundo numero ingresado por el usuario.
+    - El array encontrado era:
+        int array[16] = {
+            7, 4, 6, 8,
+            13, 10, 15, 9,
+            0, 12, 3, 5,
+            2, 11, 1, 14
+        };
+    - Y nuevamente se encontro con python una respuesta posible: 103 44
+
