@@ -4,54 +4,53 @@
 #include "inode.h"
 #include "diskimg.h"
 
-int inode_iget(struct unixfilesystem *fs, int inumber, struct inode *inp) {
+int inode_iget(struct unixfilesystem *fs, int inumber, struct inode *inode_ptr) {
     if (inumber < 1) return -1;
 
-    int inodes_per_block = DISKIMG_SECTOR_SIZE / sizeof(struct inode);
-    int inode_block = (inumber - 1) / inodes_per_block + INODE_START_SECTOR;
-    int inode_offset = (inumber - 1) % inodes_per_block;
+    int inodes_per_sector = DISKIMG_SECTOR_SIZE / sizeof(struct inode);
+    int sector_number = (inumber - 1) / inodes_per_sector + INODE_START_SECTOR;
+    int inode_index = (inumber - 1) % inodes_per_sector;
 
-    struct inode buf[inodes_per_block];
-    if (diskimg_readsector(fs->dfd, inode_block, buf) != DISKIMG_SECTOR_SIZE) return -1;
+    struct inode inode_buffer[inodes_per_sector];
+    if (diskimg_readsector(fs->dfd, sector_number, inode_buffer) != DISKIMG_SECTOR_SIZE) return -1;
 
-    *inp = buf[inode_offset];
+    *inode_ptr = inode_buffer[inode_index];
     return 0;
 }
 
-int inode_indexlookup(struct unixfilesystem *fs, struct inode *inp, int blockNum) {
-    if (!(inp->i_mode & IALLOC) || blockNum < 0) return -1;
+int inode_indexlookup(struct unixfilesystem *fs, struct inode *inode_ptr, int block_num) {
+    if (!(inode_ptr->i_mode & IALLOC) || block_num < 0) return -1;
 
-    int ptrs_per_block = DISKIMG_SECTOR_SIZE / sizeof(unsigned short);
+    int pointers_per_block = DISKIMG_SECTOR_SIZE / sizeof(unsigned short);
 
-    if (!(inp->i_mode & ILARG)) {
-        return (blockNum >= 8 || inp->i_addr[blockNum] == 0) ? -1 : inp->i_addr[blockNum];
-    }
+    if (!(inode_ptr->i_mode & ILARG))
+        return (block_num >= 8 || inode_ptr->i_addr[block_num] == 0) ? -1 : inode_ptr->i_addr[block_num];
 
-    int simple_limit = 7 * ptrs_per_block;
+    int direct_block_limit = 7 * pointers_per_block;
 
-    if (blockNum < simple_limit) {
-        int indir_block_num = inp->i_addr[blockNum / ptrs_per_block];
-        if (indir_block_num == 0) return -1;
+    if (block_num < direct_block_limit) {
+        int indirect_block_num = inode_ptr->i_addr[block_num / pointers_per_block];
+        if (indirect_block_num == 0) return -1;
 
-        unsigned short ptrs[ptrs_per_block];
-        if (diskimg_readsector(fs->dfd, indir_block_num, ptrs) != DISKIMG_SECTOR_SIZE) return -1;
+        unsigned short indirect_pointers[pointers_per_block];
+        if (diskimg_readsector(fs->dfd, indirect_block_num, indirect_pointers) != DISKIMG_SECTOR_SIZE) return -1;
 
-        int data_block_num = ptrs[blockNum % ptrs_per_block];
+        int data_block_num = indirect_pointers[block_num % pointers_per_block];
         return data_block_num == 0 ? -1 : data_block_num;
     }
 
-    int double_blockNum = blockNum - simple_limit;
-    unsigned short first_level[ptrs_per_block];
+    int double_indirect_index = block_num - direct_block_limit;
+    unsigned short first_level_pointers[pointers_per_block];
 
-    if (diskimg_readsector(fs->dfd, inp->i_addr[7], first_level) != DISKIMG_SECTOR_SIZE) return -1;
+    if (diskimg_readsector(fs->dfd, inode_ptr->i_addr[7], first_level_pointers) != DISKIMG_SECTOR_SIZE) return -1;
 
-    int second_indir_block = first_level[double_blockNum / ptrs_per_block];
-    if (second_indir_block == 0) return -1;
+    int second_level_block_num = first_level_pointers[double_indirect_index / pointers_per_block];
+    if (second_level_block_num == 0) return -1;
 
-    unsigned short second_level[ptrs_per_block];
-    if (diskimg_readsector(fs->dfd, second_indir_block, second_level) != DISKIMG_SECTOR_SIZE) return -1;
+    unsigned short second_level_pointers[pointers_per_block];
+    if (diskimg_readsector(fs->dfd, second_level_block_num, second_level_pointers) != DISKIMG_SECTOR_SIZE) return -1;
 
-    return (second_level[double_blockNum % ptrs_per_block] == 0) ? -1 : second_level[double_blockNum % ptrs_per_block];
+    return (second_level_pointers[double_indirect_index % pointers_per_block] == 0) ? -1 : second_level_pointers[double_indirect_index % pointers_per_block];
 }
 
 int inode_getsize(struct inode *inp) {
