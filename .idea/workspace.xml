@@ -17,9 +17,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0a329510-653f-4cc0-a8a3-b111cf7d6157" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/TP4-Shell/src/ej2/tester.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP3-FileSystem/inode.c" beforeDir="false" afterPath="$PROJECT_DIR$/TP3-FileSystem/inode.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TP3-FileSystem/pathname.c" beforeDir="false" afterPath="$PROJECT_DIR$/TP3-FileSystem/pathname.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP4-Shell/src/ej1/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP4-Shell/src/ej1/ring.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP4-Shell/src/ej2/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TP4-Shell/src/ej2/shell.c" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +88,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/juanc/OneDrive/Escritorio/udesa/TP_ACSO/TP3-FileSystem",
+    "last_opened_file_path": "C:/Users/juanc/OneDrive/Escritorio/udesa/TP_ACSO/TP4-Shell/src/ej2",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -97,9 +100,13 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\juanc\OneDrive\Escritorio\udesa\TP_ACSO\TP4-Shell\src\ej2" />
+      <recent name="C:\Users\juanc\OneDrive\Escritorio\udesa\TP_ACSO\TP4-Shell\src\ej1" />
       <recent name="C:\Users\juanc\OneDrive\Escritorio\udesa\TP_ACSO\TP3-FileSystem" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\juanc\OneDrive\Escritorio\udesa\TP_ACSO\TP4-Shell\src\ej2" />
+      <recent name="C:\Users\juanc\OneDrive\Escritorio\udesa\TP_ACSO\TP4-Shell\src" />
       <recent name="C:\Users\juanc\OneDrive\Escritorio\udesa\TP_ACSO\TP3-FileSystem" />
       <recent name="C:\Users\juanc\OneDrive\Escritorio\udesa\TP_ACSO\TP2-x86_64" />
     </key>
@@ -124,6 +131,8 @@
       <workItem from="1744817883841" duration="850000" />
       <workItem from="1744818790384" duration="1042000" />
       <workItem from="1747247529548" duration="791000" />
+      <workItem from="1748529558880" duration="4472000" />
+      <workItem from="1748802583247" duration="7710000" />
     </task>
     <servers />
   </component>
